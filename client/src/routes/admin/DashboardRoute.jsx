@@ -16,6 +16,9 @@ import useAuthRefresh from '../../hooks/useAuthRefresh';
 import AddProperty from "../../pages/admin/properties/AddProperty";
 import UpdateProperty from "../../pages/admin/properties/UpdateProperty";
 import GetProperties from "../../pages/admin/properties/property";
+import GetEntries from "../../pages/admin/inventory/GetEntries";
+import AddEntry from "../../pages/admin/inventory/AddEntry";
+import UpdateEntry from "../../pages/admin/inventory/UpdateEntry";
 
 const AppRoutes = () => {
 
@@ -46,6 +49,10 @@ const AppRoutes = () => {
         <Route path="create-coupon" element={<CreateCoupon />} />
         <Route path="add-new_admin" element={<AddNewUser />} />
         
+        <Route path="getentries" element={<GetEntries />} />
+        <Route path="addentry" element={< AddEntry/>} />
+        <Route path="updateentry" element={<UpdateEntry />} />
+
       </Route>
       <Route path="*" element={<Navigate to="/admin/login" replace />} />
     </Routes>
