@@ -8,13 +8,11 @@ import Product from "../../pages/admin/product/Product";
 import Category from "../../pages/admin/category/Category";
 import Order from "../../pages/admin/orders/Order";
 import Coupon from "../../pages/admin/coupon/coupon";
-import ManageAdmin from "../../pages/admin/manage_admin/ManageAdmin";
-import Customer from "../../pages/admin/customers/Customer";
+import ManageUser from "../../pages/admin/manage_user/ManageUser";
 import AddProduct from "../../pages/admin/product/AddProduct";
 import AddCategory from "../../pages/admin/category/AddCategory";
 import CreateCoupon from "../../pages/admin/coupon/CreateCoupon";
-import AddNewAdmin from "../../pages/admin/manage_admin/AddNewAdmin";
-import AddNewCustomer from "../../pages/admin/customers/AddNewCustomer";
+import AddNewUser from "../../pages/admin/manage_user/AddNewUser";
 import ProtectedRoute from "../../components/PrivateRoute";
 import useAuthRefresh from '../../hooks/useAuthRefresh';
 
@@ -40,13 +38,11 @@ const AppRoutes = () => {
         <Route path="category" element={<Category />} />
         <Route path="orders" element={<Order />} />
         <Route path="coupon" element={<Coupon />} />
-        <Route path="manage-admins" element={<ManageAdmin />} />
-        <Route path="customers" element={<Customer />} />
+        <Route path="manage-admins" element={<ManageUser />} />
         <Route path="add-product" element={<AddProduct />} />
         <Route path="add-category" element={<AddCategory />} />
         <Route path="create-coupon" element={<CreateCoupon />} />
-        <Route path="add-new_admin" element={<AddNewAdmin />} />
-        <Route path="add-new_customer" element={<AddNewCustomer />} />
+        <Route path="add-new_admin" element={<AddNewUser />} />
       </Route>
       <Route path="*" element={<Navigate to="/admin/login" replace />} />
     </Routes>

@@ -11,7 +11,8 @@ const verifyToken = (req, res, next) => {
   jwt.verify(token, ACCESS_TOKEN_SECRET, (err, decoded) => {
     if (err) return res.status(401).json({ error: 'Invalid or expired token' });
 
-    const { jti, id: userId } = decoded;
+    const { jti, id: userId, role } = decoded;   // ✅ role extracted
+
 
     connection.query(
       'SELECT * FROM active_tokens WHERE token_id = ? AND user_id = ? AND is_blacklisted = 0',
@@ -21,7 +22,13 @@ const verifyToken = (req, res, next) => {
         if (results.length === 0)
           return res.status(401).json({ error: 'Token has been invalidated' });
 
-        req.user = { id: userId, jti };
+        // 🔥 FINAL FIX — role attach to req.user
+        req.user = { 
+          id: userId, 
+          jti, 
+          role
+        };
+
         next();
       }
     );

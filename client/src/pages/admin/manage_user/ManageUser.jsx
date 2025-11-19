@@ -15,7 +15,7 @@ import Breadcrumb from "../layout/Breadcrumb";
 import api from "../../../api/axiosInstance";
 import { useEffect } from "react";
 
-const ManageAdmin = () => {
+const ManageUser = () => {
   const [activeTab, setActiveTab] = useState("All");
   const [users, setUsers] = useState([]);
 
@@ -88,7 +88,8 @@ const ManageAdmin = () => {
                   </td>
                   <td>{user.email}</td>
                   <td>{user.number}</td>
-                  <td>{user.role}</td>
+                  <td>{JSON.parse(user.role).join(", ")}</td>
+
                   <td>
                     <span className="status published">{user.status}</span>
                   </td>
@@ -125,4 +126,4 @@ const ManageAdmin = () => {
   );
 };
 
-export default ManageAdmin;
+export default ManageUser;

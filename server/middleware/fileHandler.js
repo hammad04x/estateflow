@@ -9,8 +9,6 @@ app.use("/uploads", express.static("uploads"));
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
         cb(null, path.join(__dirname, "../../client/public/uploads"))
-        console.log(req.file);
-        console.log(req.body);
         
     },
     filename: (req, file, cb) => {
@@ -21,6 +19,6 @@ const storage = multer.diskStorage({
 });
 
 
-const location = multer({ storage: storage });
+const upload = multer({ storage: storage });
 
-module.exports = location;
+module.exports = upload;
