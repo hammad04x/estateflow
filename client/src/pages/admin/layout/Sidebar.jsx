@@ -67,12 +67,6 @@ const Sidebar = ({ onLogout }) => {
               Manage Admins
             </NavLink>
           </li>
-          <li>
-            <NavLink to="/admin/customers">
-              <LuUsers />
-              Customers
-            </NavLink>
-          </li>
         </ul>
       </nav>
       <div className="menu-content">

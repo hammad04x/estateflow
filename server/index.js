@@ -12,9 +12,12 @@ const port = 4500;
 
 app.use(cors());
 app.use(bodyParser.json());
-app.use('/admin', authRoutes);
-app.use('', inventory);
-app.use('', inventoryconfirmation);
+
+app.use("/uploads", express.static("uploads"));
+
+app.use('/admin', authRoutes);        
+app.use('/', inventory);        
+app.use('/', inventoryconfirmation);        
 
 blacklistExpiredToken()
 cleanUpExpiredToken()

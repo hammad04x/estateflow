@@ -168,11 +168,66 @@ const getUsers=(req,res)=>{
   })
 }
 
+const addUser = async (req, res) => {
+  try {
+    const { name, email, number, alt_number, password, roles, status } = req.body;
+
+    if (!name || !email || !number || !password) {
+      return res.status(400).json({ error: 'Required fields missing' });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // roles is string so parse it
+    const roleJSON = JSON.stringify(JSON.parse(roles));
+
+    // file handling
+    const imageName = req.file ? req.file.filename : "defaultuser.png";
+
+    const sql = `
+      INSERT INTO users (name, email, number, alt_number, password, img, status, role)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    `;
+
+    connection.query(
+      sql,
+      [
+        name,
+        email,
+        number,
+        alt_number || null,
+        hashedPassword,
+        imageName,
+        status || "active",
+        roleJSON
+      ],
+      (err, result) => {
+        if (err) {
+          console.error("Add user error:", err);
+          return res.status(500).json({ error: "Failed to add user" });
+        }
+
+        res.json({
+          success: true,
+          message: "User added successfully",
+          id: result.insertId,
+          image: imageName
+        });
+      }
+    );
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ error: "Server error" });
+  }
+};
+
+
 module.exports = {
   login,
   refreshToken,
   updateActivity,
   logout,
   getUserById,
-  getUsers
+  getUsers,
+  addUser
 };
