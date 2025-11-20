@@ -131,7 +131,7 @@ const GetProperties = () => {
                   <tr key={p.id} className="clickable-row" onClick={() => openDetails(p)}>
                     <td>
                       <img
-                        src={`/uploads/${p.image}`}
+                        src={`/uploads/${p.img}`}
                         alt={p.title}
                         style={{
                           width: 80,
