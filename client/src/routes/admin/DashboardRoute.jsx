@@ -19,8 +19,10 @@ import GetProperties from "../../pages/admin/properties/property";
 import GetEntries from "../../pages/admin/inventory/GetEntries";
 import AddEntry from "../../pages/admin/inventory/AddEntry";
 import UpdateEntry from "../../pages/admin/inventory/UpdateEntry";
+import GetConfirmations from "../../pages/admin/inventory/invetoryconfirmation/GetConfirmations";
+import AddConfirmation from "../../pages/admin/inventory/invetoryconfirmation/AddConfirmation";
+import UpdateConfirmation from "../../pages/admin/inventory/invetoryconfirmation/UpdateConfirmation";
 import EditUser from "../../pages/admin/manage_user/EditUser";
-import "../../assets/css/admin/product.css"
 
 const AppRoutes = () => {
 
@@ -53,8 +55,12 @@ const AppRoutes = () => {
         <Route path="updateproperty" element={<UpdateProperty />} />
         
         <Route path="getentries" element={<GetEntries />} />
-        <Route path="addentry" element={< AddEntry/>} />
+        <Route path="addentry" element={< AddEntry />} />
         <Route path="updateentry" element={<UpdateEntry />} />
+
+        <Route path="/admin/getconfirmations" element={<GetConfirmations />} />
+        <Route path="/admin/addconfirmation" element={<AddConfirmation />} />
+        <Route path="/admin/updateconfirmation" element={<UpdateConfirmation />} />
 
       </Route>
       <Route path="*" element={<Navigate to="/admin/login" replace />} />
