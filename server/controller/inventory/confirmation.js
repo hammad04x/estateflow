@@ -3,9 +3,9 @@ const connection = require("../../connection/connection");
 
 const getAllConfirmations = (req, res) => {
 
-  let sql = "SELECT * FROM entry_confirmations";
+  let sql = "SELECT * FROM inventory_confirmations";
   
-  connection.query(sql, params, (err, rows) => {
+  connection.query(sql, (err, rows) => {
     if (err) {
       console.error(err);
       return res.status(500).json({ error: "database error", details: err.message || err });
@@ -17,7 +17,7 @@ const getAllConfirmations = (req, res) => {
 // GET /getconfirmation/:id
 const getConfirmationById = (req, res) => {
   const { id } = req.params;
-  const sql = "SELECT * FROM entry_confirmations WHERE id = ?";
+  const sql = "SELECT * FROM inventory_confirmations WHERE id = ?";
   connection.query(sql, [id], (err, rows) => {
     if (err) {
       console.error(err);
@@ -36,7 +36,7 @@ const addConfirmation = (req, res) => {
     return res.status(400).json({ error: "invalid status" });
   }
 
-  const sql = `INSERT INTO entry_confirmations
+  const sql = `INSERT INTO inventory_confirmations
     (entry_id, confirmed_by, status, confirmed_at, reject_reason)
     VALUES (?, ?, ?, ?, ?)`;
 
@@ -65,7 +65,7 @@ const updateConfirmation = (req, res) => {
     return res.status(400).json({ error: "invalid status" });
   }
 
-  const sql = `UPDATE entry_confirmations SET
+  const sql = `UPDATE inventory_confirmations SET
     entry_id = COALESCE(?, entry_id),
     confirmed_by = COALESCE(?, confirmed_by),
     status = COALESCE(?, status),
@@ -88,7 +88,7 @@ const updateConfirmation = (req, res) => {
 
 const deleteConfirmation = (req, res) => {
   const { id } = req.params;
-  const sql = "DELETE FROM entry_confirmations WHERE id = ?";
+  const sql = "DELETE FROM inventory_confirmations WHERE id = ?";
   connection.query(sql, [id], (err, result) => {
     if (err) {
       console.error(err);
@@ -101,7 +101,7 @@ const deleteConfirmation = (req, res) => {
 
 const getByEntry = (req, res) => {
   const { entry_id } = req.params;
-  const sql = "SELECT * FROM entry_confirmations WHERE entry_id = ? ";
+  const sql = "SELECT * FROM inventory_confirmations WHERE entry_id = ? ";
   connection.query(sql, [entry_id], (err, rows) => {
     if (err) {
       console.error(err);

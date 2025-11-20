@@ -62,6 +62,12 @@ const Sidebar = ({ onLogout }) => {
               Inventory
             </NavLink>
           </li>
+          <li>
+            <NavLink to="/admin/getconfirmations">
+              <RiCoupon2Line />
+              Inventory confirmation
+            </NavLink>
+          </li>
         </ul>
       </nav>
       <nav className="menu-content">
