@@ -1,111 +1,189 @@
-import React, { useEffect, useState } from "react";
+// src/pages/admin/AddConfirmation.jsx
+import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-// import Breadcrumb from "../layout/Breadcrumb";
-// import "../../../assets/css/admin-card.css";
+import Breadcrumb from "../../layout/Breadcrumb";
 import api from "../../../../api/axiosInstance";
 import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import Breadcrumb from "../../layout/Breadcrumb";
 
 const AddConfirmation = () => {
-  const formatLocalDatetime = (d = new Date()) => {
-    const pad = (n) => (n < 10 ? "0" + n : n);
-    const year = d.getFullYear();
-    const month = pad(d.getMonth() + 1);
-    const day = pad(d.getDate());
-    const hours = pad(d.getHours());
-    const mins = pad(d.getMinutes());
-    return `${year}-${month}-${day}T${hours}:${mins}`;
+  const formatLocalDatetime = () => {
+    const d = new Date();
+    return d.toISOString().slice(0, 16);
   };
+  const navigate = useNavigate();
+  const canvasRef = useRef(null);
+  const [drawing, setDrawing] = useState(false);
 
   const [form, setForm] = useState({
     entry_id: "",
-    confirmed_by: "", // try auto fill below
+    confirmed_by: "",
     status: "confirmed",
     confirmed_at: formatLocalDatetime(),
     reject_reason: "",
   });
 
-  const navigate = useNavigate();
-
-  // try get current user id from localStorage if present
+  // auto-fill confirmed_by from localStorage
   useEffect(() => {
-    try {
-      const raw = localStorage.getItem("user") || localStorage.getItem("authUser");
-      if (raw) {
-        const parsed = JSON.parse(raw);
-        const id = parsed?.id || parsed?.userId || parsed?.user?.id || parsed?.user_id;
-        if (id) setForm((s) => ({ ...s, confirmed_by: id }));
-      }
-    } catch (err) {
-      // ignore
+    const raw = localStorage.getItem("user");
+    if (!raw) return;
+    const user = JSON.parse(raw);
+    if (user?.id) {
+      setForm((prev) => ({ ...prev, confirmed_by: user.id }));
     }
+    setForm((prev) => ({
+      ...prev,
+      confirmed_at: new Date().toISOString().slice(0, 16),
+    }));
   }, []);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setForm((s) => ({ ...s, [name]: value }));
+  const handleChange = (e) =>
+    setForm({ ...form, [e.target.name]: e.target.value });
+
+  // CANVAS EVENTS
+  const startDraw = ({ nativeEvent }) => {
+    const { offsetX, offsetY } = nativeEvent;
+    const ctx = canvasRef.current.getContext("2d");
+    ctx.beginPath();
+    ctx.moveTo(offsetX, offsetY);
+    setDrawing(true);
+  };
+
+  const drawingMove = ({ nativeEvent }) => {
+    if (!drawing) return;
+    const { offsetX, offsetY } = nativeEvent;
+    const ctx = canvasRef.current.getContext("2d");
+    ctx.lineTo(offsetX, offsetY);
+    ctx.stroke();
+  };
+
+  const stopDraw = () => setDrawing(false);
+
+  const clearCanvas = () => {
+    const ctx = canvasRef.current.getContext("2d");
+    ctx.clearRect(0, 0, 600, 200);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!form.entry_id) return toast.error("entry_id is required");
+
+    if (!form.entry_id) return toast.error("Entry ID required");
+
+    // convert canvas → blob
+    const canvas = canvasRef.current;
+    const blob = await new Promise((resolve) =>
+      canvas.toBlob(resolve, "image/png")
+    );
+
+    const fd = new FormData();
+    fd.append("entry_id", form.entry_id);
+    fd.append("confirmed_by", form.confirmed_by);
+    fd.append("status", form.status);
+    fd.append("confirmed_at", form.confirmed_at);
+    if (form.reject_reason) fd.append("reject_reason", form.reject_reason);
+
+    if (blob) fd.append("signature", blob, "signature.png");
 
     try {
-      await api.post("http://localhost:4500/addconfirmation", {
-        ...form,
-        confirmed_at: form.confirmed_at || null,
-        reject_reason: form.reject_reason || null,
+      await api.post("http://localhost:4500/addconfirmation", fd, {
+        headers: { "Content-Type": "multipart/form-data" },
       });
-      toast.success("Confirmation created");
+
+      toast.success("Confirmation added");
       navigate("/admin/getconfirmations");
     } catch (err) {
-      console.error("addConfirmation error:", err);
-      toast.error("Failed to create");
+      toast.error("Failed to submit confirmation");
+      console.error(err);
     }
   };
 
   return (
     <>
-      <Breadcrumb title="Add Confirmation" breadcrumbText="Confirm or reject an entry" isMobile={false} isTablet={false} />
-      <div className="card" style={{ padding: 20, maxWidth: 720 }}>
+      <Breadcrumb
+        title="Add Confirmation"
+        breadcrumbText="Confirm Inventory Entry"
+        isMobile={false}
+        isTablet={false}
+      />
+
+      <div className="card" style={{ padding: 20, maxWidth: 760 }}>
         <form onSubmit={handleSubmit}>
           <div style={{ display: "grid", gap: 12 }}>
             <label>
               Entry ID
-              <input name="entry_id" value={form.entry_id} onChange={handleChange} required />
-            </label>
-
-            <label>
-              Confirmed by (user id)
-              <input name="confirmed_by" value={form.confirmed_by} onChange={handleChange} />
+              <input
+                name="entry_id"
+                value={form.entry_id}
+                onChange={handleChange}
+                required
+              />
             </label>
 
             <label>
               Status
-              <select name="status" value={form.status} onChange={handleChange}>
+              <select
+                name="status"
+                value={form.status}
+                onChange={handleChange}
+              >
                 <option value="confirmed">confirmed</option>
                 <option value="rejected">rejected</option>
               </select>
             </label>
 
-            <label>
-              Confirmed at
-              <input name="confirmed_at" type="datetime-local" value={form.confirmed_at} onChange={handleChange} />
-            </label>
-
             {form.status === "rejected" && (
               <label>
-                Reject reason
-                <textarea name="reject_reason" value={form.reject_reason} onChange={handleChange} />
+                Reject Reason
+                <textarea
+                  name="reject_reason"
+                  value={form.reject_reason}
+                  onChange={handleChange}
+                />
               </label>
             )}
 
-            <div style={{ display: "flex", gap: 8 }}>
-              <button type="submit" className="btn primary">
-                Add
+            <label>
+              Confirmed At
+              <input
+                type="datetime-local"
+                name="confirmed_at"
+                value={form.confirmed_at}
+                onChange={handleChange}
+              />
+            </label>
+
+            {/* SIGNATURE CANVAS */}
+            <div>
+              <p style={{ fontWeight: 600, marginBottom: 6 }}>Signature</p>
+              <canvas
+                ref={canvasRef}
+                width={600}
+                height={200}
+                style={{
+                  border: "1px solid #aaa",
+                  borderRadius: 8,
+                  background: "#fff",
+                }}
+                onMouseDown={startDraw}
+                onMouseMove={drawingMove}
+                onMouseUp={stopDraw}
+                onMouseLeave={stopDraw}
+              ></canvas>
+
+              <button type="button" onClick={clearCanvas} style={{ marginTop: 10 }}>
+                Clear
               </button>
-              <button type="button" className="btn" onClick={() => navigate("/admin/getconfirmations")}>
+            </div>
+
+            <div style={{ display: "flex", gap: 8 }}>
+              <button className="btn primary" type="submit">
+                Submit
+              </button>
+
+              <button
+                className="btn"
+                type="button"
+                onClick={() => navigate("/admin/getconfirmations")}
+              >
                 Cancel
               </button>
             </div>
@@ -113,7 +191,7 @@ const AddConfirmation = () => {
         </form>
       </div>
 
-      <ToastContainer position="top-right" autoClose={2500} hideProgressBar theme="colored" />
+      <ToastContainer />
     </>
   );
 };

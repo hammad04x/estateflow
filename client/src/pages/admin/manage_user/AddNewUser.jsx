@@ -64,7 +64,7 @@ const AddNewUser = () => {
       });
 
       alert("User added!");
-      navigate("/admin/manage-admins");
+      navigate("/admin/manage-user");
     } catch (err) {
       console.error(err);
       alert("Failed to add user.");
@@ -93,7 +93,7 @@ const AddNewUser = () => {
           </div>
 
           <div className="admin-panel-header-add-buttons">
-            <NavLink to="/admin/manage-admins" className="cancel-btn dashboard-add-product-btn">
+            <NavLink to="/admin/manage-user" className="cancel-btn dashboard-add-product-btn">
               <HiXMark /> Cancel
             </NavLink>
             <button onClick={submitUser} className="primary-btn dashboard-add-product-btn">

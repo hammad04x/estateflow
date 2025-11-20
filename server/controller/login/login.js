@@ -11,7 +11,12 @@ const login = (req, res) => {
     return res.status(400).json({ error: 'Identifier and password are required' });
   }
 
-  const sql = 'SELECT * FROM users WHERE email = ? OR number = ?';
+  const sql = `
+    SELECT * 
+    FROM users 
+    WHERE (email = ? OR number = ?) 
+      AND status = 'active'
+  `;
   connection.query(sql, [identifier, identifier], async (err, results) => {
     if (err) return res.status(500).json({ error: 'Database error' });
 
@@ -145,7 +150,7 @@ const getUserById = (req, res) => {
   const { id } = req.params;
 
   connection.query(
-    'SELECT id, name, email, number, status, role, created_at, updated_at FROM users WHERE id = ?',
+    'SELECT id, name, email, number,alt_number,img, status, role, created_at, updated_at FROM users WHERE id = ?',
     [id],
     (err, results) => {
       if (err) return res.status(500).json({ error: 'Database error' });
@@ -157,9 +162,9 @@ const getUserById = (req, res) => {
   );
 };
 
-const getUsers=(req,res)=>{
-  const query="SELECT * FROM users";
-  connection.query(query,(err,result)=>{
+const getUsers = (req, res) => {
+  const query = "SELECT * FROM users";
+  connection.query(query, (err, result) => {
     if (err) {
       return res.status(500)
     } else {
@@ -221,6 +226,76 @@ const addUser = async (req, res) => {
   }
 };
 
+const editUser = async (req, res) => {
+  try {
+    const loggedId = req.user.id;
+    const loggedRoles = req.user.role; // already array like ["admin"]
+
+    // admin edits anyone | user edits only themselves
+    const editId = loggedRoles.includes("admin") ? req.body.id : loggedId;
+
+    const { name, email, number, alt_number, status, roles, password, old_password } = req.body;
+
+    const image = req.file ? req.file.filename : null;
+
+    const updates = {};
+
+    if (name) updates.name = name;
+    if (email) updates.email = email;
+    if (number) updates.number = number;
+    if (alt_number) updates.alt_number = alt_number;
+
+    /** PASSWORD UPDATE */
+    if (password) {
+      if (!loggedRoles.includes("admin")) {
+        if (!old_password) {
+          return res.status(400).json({ error: "Old password required" });
+        }
+
+        const [user] = await connection
+          .promise()
+          .query("SELECT password FROM users WHERE id = ?", [editId]);
+
+        const match = await bcrypt.compare(old_password, user[0].password);
+        if (!match) {
+          return res.status(400).json({ error: "Old password does not match" });
+        }
+      }
+
+      updates.password = await bcrypt.hash(password, 10);
+    }
+
+    /** STATUS & ROLES — Admin only */
+    if (loggedRoles.includes("admin")) {
+      if (status) updates.status = status;
+
+      if (roles) updates.role = JSON.stringify(JSON.parse(roles));
+    }
+
+    if (image) updates.img = image;
+
+    connection.query("UPDATE users SET ? WHERE id = ?", [updates, editId], (err) => {
+      if (err) return res.status(500).json({ error: "Database error" });
+
+      res.json({ success: true, message: "User updated" });
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ error: "Server error" });
+  }
+};
+
+
+const trahClient = (req, res) => {
+  const { id } = req.params;
+  const { status } = req.body;
+
+  connection.query("UPDATE users SET status =? WHERE id =? ", [status, id], (err, result) => {
+    if (err) return res.status(500).json({ error: "DB Error" });
+    res.json(result);
+  });
+};
+
 
 module.exports = {
   login,
@@ -229,5 +304,7 @@ module.exports = {
   logout,
   getUserById,
   getUsers,
-  addUser
+  addUser,
+  editUser,
+  trahClient
 };

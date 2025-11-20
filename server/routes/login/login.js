@@ -10,8 +10,12 @@ router.post('/refresh-token', verifyToken, login.refreshToken);
 router.post('/update-activity', verifyToken, login.updateActivity);
 router.post('/logout', verifyToken, login.logout);
 router.get('/getuserbyid/:id', verifyToken, login.getUserById);
-router.get('/getUsers/', verifyToken, login.getUsers);
-router.post('/addUser', verifyToken, authorizeRole('admin'), upload.single("img"),  login.addUser);
+router.get('/getUsers/', verifyToken,  login.getUsers);
+router.post('/addUser', verifyToken, authorizeRole('admin'), upload.single("img"), login.addUser);
+router.put("/editUser",  verifyToken,upload.single("img"), login.editUser);
+router.put('/trash-client/:id', verifyToken, authorizeRole('admin'), login.trahClient);
+
+
 
 
 

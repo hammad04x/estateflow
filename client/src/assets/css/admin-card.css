@@ -1,0 +1,396 @@
+/* assets/css/admin-card.css */
+@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Public+Sans:ital,wght@0,100..900;1,100..900&display=swap");
+
+/* ========================================
+   CSS VARIABLES (if not defined elsewhere)
+   ======================================== */
+:root {
+  --primary-btn-bg: #4f6ef7;
+  --primary-border-color: #cbd5e1;
+  --white-color: #ffffff;
+  --black-color: #1e293b;
+  --light-gray-color: #94a3b8;
+  --light-white-color: #f8fafc;
+  --red-color: #ef4444;
+  --primary-font: "Inter", sans-serif;
+  --info-font: "Public Sans", sans-serif;
+  --sidebar-bg-color: #f8fafc;
+  --dashboard-tr-hover-color: #f1f5f9;
+}
+
+/* === COMMON BUTTONS – NO SIZE CHANGE ON HOVER === */
+.primary-btn,
+.secondary-btn,
+.cancel-btn,
+.header-back-btn,
+.btn-outline,
+.btn-danger,
+.client-add-sale-btn,
+.client-add-payment-btn,
+.client-mark-paid-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-family: var(--primary-font);
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  white-space: nowrap;
+  min-height: 40px;
+  width: fit-content;
+}
+
+.primary-btn,
+.client-add-sale-btn,
+.client-add-payment-btn {
+  background: var(--primary-btn-bg);
+  color: var(--white-color);
+  border: 2px solid var(--primary-btn-bg);
+}
+.primary-btn:hover:not(:disabled),
+.client-add-sale-btn:hover,
+.client-add-payment-btn:hover {
+  background: transparent;
+  color: var(--primary-btn-bg);
+  border-color: var(--primary-btn-bg);
+  box-shadow: 0 2px 8px rgba(56, 88, 214, 0.15);
+}
+
+.client-mark-paid-btn {
+  background: #22c55e;
+  color: white;
+  font-size: 13px;
+  padding: 8px 14px;
+}
+.client-mark-paid-btn:hover {
+  background: #16a34a;
+}
+
+.secondary-btn {
+  background: transparent;
+  color: var(--primary-btn-bg);
+  border: 2px solid var(--primary-btn-bg);
+}
+.secondary-btn:hover {
+  background: var(--primary-btn-bg);
+  color: var(--white-color);
+}
+
+.cancel-btn {
+  background: transparent;
+  color: var(--black-color);
+  border: 2px solid var(--primary-border-color);
+}
+.cancel-btn:hover {
+  background: #f1f5f9;
+}
+
+.header-back-btn {
+  background: var(--white-color);
+  color: var(--black-color);
+  border: 1px solid var(--primary-border-color);
+}
+.header-back-btn:hover {
+  background: #f8f9fa;
+  border-color: var(--primary-btn-bg);
+}
+
+.btn-outline {
+  background: transparent;
+  color: var(--black-color);
+  border: 1px solid var(--primary-border-color);
+}
+.btn-outline:hover {
+  background: #f1f5f9;
+  border-color: var(--primary-btn-bg);
+}
+
+.btn-danger {
+  background: var(--red-color);
+  color: var(--white-color);
+  border: 2px solid var(--red-color);
+}
+.btn-danger:hover {
+  background: transparent;
+  color: var(--red-color);
+}
+
+/* Disabled state */
+button:disabled,
+button[aria-disabled="true"] {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ========================================
+   VIEW-ADMIN HEADER (Back + Add Sale + Title Below)
+   ======================================== */
+.view-admin-header {
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.header-top-left,
+.header-top-right {
+  display: flex;
+  align-items: center;
+}
+
+.header-title {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+.header-title .client-title {
+  margin: 0;
+  font-size: 26px;
+  font-weight: 700;
+  background: linear-gradient(135deg, #4f6ef7, #3b82f6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ========================================
+   ADMIN CARD LIST – RESPONSIVE (ManageAdmin)
+   ======================================== */
+
+/* ---- CARD ROW (shared base) ---- */
+.card-row {
+  display: flex;
+  background: var(--white-color);
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  cursor: pointer;
+  align-items: center;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.card-row:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+}
+
+/* ---- IMAGE – progressively smaller ---- */
+.card-left img {
+  width: 70px;
+  height: 70px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+/* ---- MIDDLE – name + email ---- */
+.card-middle {
+  flex: 1;
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.card-title {
+  font-weight: 600;
+  font-size: 15px;
+  color: #1e293b;
+  margin: 0;
+}
+.card-sub {
+  font-size: 13px;
+  color: var(--light-gray-color);
+  margin-top: 2px;
+}
+
+/* ---- RIGHT – status pill ---- */
+.card-right {
+  padding: 0 16px;
+}
+.count-pill {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 13px;
+  text-transform: capitalize;
+}
+.count-pill.published { background: #e9faf7; color: #1a9882; }
+.count-pill.out-of-stock { background: #feecee; color: #eb3d4d; }
+
+/* ========================================
+   TABLET (768px – 1023px): Name + Email side-by-side
+   ======================================== */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .card-left img {
+    width: 80px;
+    height: 80px;
+  }
+
+  .card-middle {
+    flex-direction: row;
+    gap: 12px;
+    align-items: center;
+    padding: 14px 16px;
+  }
+  .card-title,
+  .card-sub {
+    margin: 0;
+  }
+
+  /* Table tighter */
+  .dashboard-table-container th,
+  .dashboard-table-container td {
+    padding: 12px 10px;
+    font-size: 14px;
+  }
+  .admin-profile img {
+    width: 36px;
+    height: 36px;
+  }
+}
+
+/* ========================================
+   MOBILE (≤ 767px): Only Name, Centered
+   ======================================== */
+@media (max-width: 767px) {
+  .card-left img {
+    width: 60px;
+    height: 60px;
+  }
+
+  .card-middle {
+    padding: 10px 12px;
+    text-align: center;
+    flex: 1;
+  }
+  .card-sub {
+    display: none; /* Hide email */
+  }
+}
+
+/* ========================================
+   GENERAL LAYOUTS & CARDS
+   ======================================== */
+.form-content-grid,
+.details-grid {
+  display: grid;
+  grid-template-columns: 1fr 360px;
+  gap: 24px;
+  align-items: start;
+}
+
+.form-card,
+.preview-card,
+.info-card,
+.image-card,
+.client-card,
+.client-sale-box {
+  background: var(--white-color);
+  padding: 24px;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+  border: 1px solid var(--primary-border-color);
+}
+
+.client-sidebar {
+  width: 400px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.client-layout {
+  display: flex;
+  gap: 24px;
+  margin-top: 20px;
+}
+
+.client-main {
+  flex: 1;
+  min-width: 0;
+}
+
+/* ========================================
+   RESPONSIVE BREAKPOINTS
+   ======================================== */
+@media (max-width: 1024px) {
+  .form-content-grid,
+  .details-grid {
+    grid-template-columns: 1fr;
+  }
+  .preview-card { order: -1; }
+}
+
+@media (max-width: 768px) {
+  .form-grid { grid-template-columns: 1fr; }
+  .form-field.full-width { grid-column: span 1; }
+
+  .view-admin-header .header-top {
+    flex-direction: row;
+    align-items: stretch;
+    gap: 10px;
+  }
+  .header-top-left,
+  .header-top-right {
+    width: 100%;
+  }
+  .header-back-btn,
+  .client-add-sale-btn {
+    width: 100%;
+    justify-content: center;
+  }
+  .header-title .client-title {
+    font-size: 22px;
+  }
+
+  .client-sidebar {
+    width: 100%;
+  }
+  .client-layout {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 480px) {
+  .form-card,
+  .preview-card,
+  .info-card,
+  .client-card {
+    padding: 16px;
+  }
+  .preview-img,
+  .no-image-placeholder {
+    height: 200px;
+  }
+}
+
+/* ========================================
+   PRINT STYLES
+   ======================================== */
+@media print {
+  .client-add-sale-btn,
+  .client-add-payment-btn,
+  .client-mark-paid-btn,
+  .payment-close-btn,
+  .header-back-btn {
+    display: none;
+  }
+  .client-section {
+    padding: 0;
+  }
+  .client-card {
+    box-shadow: none;
+    page-break-inside: avoid;
+  }
+}

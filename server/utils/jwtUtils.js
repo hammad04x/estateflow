@@ -1,14 +1,21 @@
-const jwt = require('jsonwebtoken');
-const { v4: uuidv4 } = require('uuid');
+const jwt = require("jsonwebtoken");
+const { v4: uuidv4 } = require("uuid");
 
-const ACCESS_TOKEN_SECRET = 'f8b54dd08c66f24176c682a3a74f7818c740ee5c1805c3e88a16ac1c92d1e721';
+const ACCESS_TOKEN_SECRET =
+  "f8b54dd08c66f24176c682a3a74f7818c740ee5c1805c3e88a16ac1c92d1e721";
+
+// ALWAYS convert role to proper JSON string
+function safeRoleEncode(role) {
+  try {
+    const parsed = JSON.parse(role);      // already JSON string
+    return JSON.stringify(parsed);
+  } catch {
+    return JSON.stringify([role]);        // "admin" → ["admin"]
+  }
+}
 
 function generateAccessToken(admin, ip, userAgent) {
   const jti = uuidv4();
-
-  let parsedRole;
-  try { parsedRole = JSON.parse(admin.role); }
-  catch { parsedRole = [admin.role]; }
 
   return {
     token: jwt.sign(
@@ -17,13 +24,13 @@ function generateAccessToken(admin, ip, userAgent) {
         email: admin.email,
         name: admin.name,
         status: admin.status,
-        role: parsedRole,   // <--- always ARRAY now
+        role: safeRoleEncode(admin.role),    // ALWAYS JSON string
         jti,
         ip,
         userAgent,
       },
       ACCESS_TOKEN_SECRET,
-      { expiresIn: '119m' }
+      { expiresIn: "119m" }
     ),
     jti,
   };
