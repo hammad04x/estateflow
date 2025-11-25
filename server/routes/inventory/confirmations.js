@@ -3,22 +3,21 @@ const router = express.Router();
 
 const ctrl = require("../../controller/inventory/confirmation");
 const verifyToken = require("../../middleware/verifyToken");
-const authorizeRole = require("../../middleware/authMiddleware");
+const authorizeRole = require("../../middleware/authorizeRole");
 
 // your existing multer file handler
 const upload = require("../../middleware/fileHandler"); 
 // use this: upload.single("signature")
 
 // 🟩 Get all confirmation records
-router.get("/getconfirmations", verifyToken, ctrl.getAllConfirmations);
+router.get("/getconfirmations", verifyToken, authorizeRole("admin","buyer"), ctrl.getAllConfirmations);
 
 // 🟦 Get single confirmation by ID
-router.get("/getconfirmation/:id", verifyToken, ctrl.getConfirmationById);
+router.get("/getconfirmation/:id", verifyToken,authorizeRole("admin","buyer"), ctrl.getConfirmationById);
 
 // 🟧 Add confirmation (supports signature image)
 router.post(
-  "/addconfirmation",
-  verifyToken,
+  "/addconfirmation",   verifyToken,authorizeRole("admin","buyer"),
   upload.single("signature"),  
   ctrl.addConfirmation
 );
@@ -26,7 +25,8 @@ router.post(
 // 🟨 Update confirmation (supports replacing signature)
 router.put(
   "/updateconfirmation/:id",
-  verifyToken,
+  verifyToken,authorizeRole("admin","buyer"),
+ 
   upload.single("signature"),
   ctrl.updateConfirmation
 );
@@ -34,7 +34,8 @@ router.put(
 // 🟥 Delete confirmation
 router.delete(
   "/deleteconfirmation/:id",
-  verifyToken,
+  verifyToken,  authorizeRole("admin","buyer"),
+
   ctrl.deleteConfirmation
 );
 
@@ -42,6 +43,8 @@ router.delete(
 router.get(
   "/getconfirmations/by-entry/:entry_id",
   verifyToken,
+  authorizeRole("admin","buyer"),
+  
   ctrl.getByEntry
 );
 
