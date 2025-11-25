@@ -2,6 +2,7 @@ module.exports = (...allowedRoles) => {
   return (req, res, next) => {
 
     const roles = req.user?.role;   // always array (because verifyToken fixes it)
+    console.log(roles)
 
     if (!roles || !Array.isArray(roles)) {
       return res.status(403).json({ error: "Access denied" });
